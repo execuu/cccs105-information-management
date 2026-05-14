@@ -1,0 +1,49 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}RFID Attendance{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  </head>
+  <body class="min-h-screen bg-slate-50 text-ink">
+    <header class="border-b border-line bg-white">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+        <a href="{% url 'dashboard' %}" class="text-lg font-semibold tracking-normal">RFID Attendance</a>
+        {% if user.is_authenticated %}
+          <nav class="flex flex-wrap items-center gap-2 text-sm">
+            {% if user.is_staff %}
+              <a class="rounded-md px-3 py-2 text-muted hover:bg-slate-100 hover:text-ink" href="{% url 'management_dashboard' %}">Dashboard</a>
+              <a class="rounded-md px-3 py-2 text-muted hover:bg-slate-100 hover:text-ink" href="{% url 'management_instructor_list' %}">Instructors</a>
+              <a class="rounded-md px-3 py-2 text-muted hover:bg-slate-100 hover:text-ink" href="{% url 'management_class_list' %}">Classes</a>
+              <a class="rounded-md px-3 py-2 text-muted hover:bg-slate-100 hover:text-ink" href="{% url 'management_student_list' %}">Students</a>
+              <a class="rounded-md px-3 py-2 text-muted hover:bg-slate-100 hover:text-ink" href="{% url 'management_room_list' %}">Rooms</a>
+              <a class="rounded-md px-3 py-2 text-muted hover:bg-slate-100 hover:text-ink" href="{% url 'management_attendance_list' %}">Attendance</a>
+            {% else %}
+              <a class="rounded-md px-3 py-2 text-muted hover:bg-slate-100 hover:text-ink" href="{% url 'dashboard' %}">Dashboard</a>
+              <a class="rounded-md px-3 py-2 text-muted hover:bg-slate-100 hover:text-ink" href="{% url 'section_list' %}">Classes</a>
+              <a class="rounded-md px-3 py-2 text-muted hover:bg-slate-100 hover:text-ink" href="{% url 'session_list' %}">Sessions</a>
+            {% endif %}
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button class="rounded-md border border-line px-3 py-2 text-muted hover:bg-slate-100 hover:text-ink" type="submit">Logout</button>
+            </form>
+          </nav>
+        {% endif %}
+      </div>
+    </header>
+    <main class="mx-auto max-w-7xl px-4 py-6">
+      {% if messages %}
+        <div class="mb-4 space-y-2">
+          {% for message in messages %}
+            <div class="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+    <script src="{% static 'js/live.js' %}" defer></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>
