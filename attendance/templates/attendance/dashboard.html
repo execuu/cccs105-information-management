@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <p class="text-sm text-muted">Instructor Dashboard</p>
+      <h1 class="text-3xl font-semibold">{{ instructor.full_name }}</h1>
+    </div>
+    <div class="flex gap-2">
+      <a class="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" href="{% url 'session_create' %}">New Session</a>
+    </div>
+  </div>
+
+  <section class="grid gap-4 lg:grid-cols-[2fr_1fr]">
+    <div class="rounded-lg border border-line bg-white shadow-sm">
+      <div class="border-b border-line px-4 py-3">
+        <h2 class="font-semibold">Today's Sessions</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-100 text-muted">
+            <tr>
+              <th class="px-4 py-3">Class</th>
+              <th class="px-4 py-3">Room</th>
+              <th class="px-4 py-3">Time</th>
+              <th class="px-4 py-3">Present</th>
+              <th class="px-4 py-3">Late</th>
+              <th class="px-4 py-3">Absent</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line">
+            {% for session in sessions %}
+              <tr class="hover:bg-slate-50">
+                <td class="px-4 py-3"><a class="font-medium text-accent" href="{% url 'session_detail' session.pk %}">{{ session.class_section }}</a></td>
+                <td class="px-4 py-3">{{ session.classroom.name }}</td>
+                <td class="px-4 py-3">{{ session.starts_at|time:"H:i" }}-{{ session.ends_at|time:"H:i" }}</td>
+                <td class="px-4 py-3 text-good">{{ session.present_count }}</td>
+                <td class="px-4 py-3 text-warn">{{ session.late_count }}</td>
+                <td class="px-4 py-3 text-bad">{{ session.absent_count }}</td>
+              </tr>
+            {% empty %}
+              <tr><td class="px-4 py-6 text-muted" colspan="6">No sessions scheduled today.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <aside class="rounded-lg border border-line bg-white shadow-sm">
+      <div class="border-b border-line px-4 py-3">
+        <h2 class="font-semibold">Recent Scans</h2>
+      </div>
+      <div class="divide-y divide-line">
+        {% for scan in recent_scans %}
+          <div class="px-4 py-3 text-sm">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-medium">{{ scan.uid }}</span>
+              <span class="rounded-full bg-slate-100 px-2 py-1 text-xs">{{ scan.result }}</span>
+            </div>
+            <p class="mt-1 text-muted">{{ scan.student.full_name|default:scan.reason }}</p>
+          </div>
+        {% empty %}
+          <p class="px-4 py-6 text-sm text-muted">No scan events yet.</p>
+        {% endfor %}
+      </div>
+    </aside>
+  </section>
+
+  <section class="mt-6 rounded-lg border border-line bg-white shadow-sm">
+    <div class="border-b border-line px-4 py-3">
+      <h2 class="font-semibold">Active Classes</h2>
+    </div>
+    <div class="grid gap-3 p-4 md:grid-cols-2 lg:grid-cols-3">
+      {% for section in sections %}
+        <a class="rounded-md border border-line p-4 hover:border-accent hover:bg-blue-50" href="{% url 'section_detail' section.pk %}">
+          <div class="text-sm text-muted">{{ section.subject_code }}</div>
+          <div class="mt-1 font-semibold">{{ section.section_code }}</div>
+          <div class="mt-1 text-sm">{{ section.subject_title }}</div>
+        </a>
+      {% empty %}
+        <p class="text-sm text-muted">No active class sections yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Rooms{% endblock %}
+
+{% block content %}
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-2xl font-semibold">Rooms</h1>
+    <a class="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" href="{% url 'management_room_create' %}">New Room</a>
+  </div>
+  <div class="overflow-x-auto rounded-lg border border-line bg-white shadow-sm">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-slate-100 text-muted">
+        <tr>
+          <th class="px-4 py-3">Room</th>
+          <th class="px-4 py-3">Scanner Code</th>
+          <th class="px-4 py-3">Location</th>
+          <th class="px-4 py-3">Active</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-line">
+        {% for room in rooms %}
+          <tr>
+            <td class="px-4 py-3 font-medium">{{ room.name }}</td>
+            <td class="px-4 py-3">{{ room.scanner_code }}</td>
+            <td class="px-4 py-3">{{ room.location|default:"-" }}</td>
+            <td class="px-4 py-3">{{ room.is_active|yesno:"Yes,No" }}</td>
+            <td class="px-4 py-3 text-right">
+              <a class="text-accent" href="{% url 'management_room_update' room.pk %}">Edit</a>
+              <a class="ml-2 text-red-700" href="{% url 'management_room_delete' room.pk %}">Delete</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td class="px-4 py-6 text-muted" colspan="5">No rooms yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

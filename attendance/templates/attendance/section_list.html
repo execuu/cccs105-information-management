@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Class Sections{% endblock %}
+
+{% block content %}
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <p class="text-sm text-muted">Assigned classes</p>
+      <h1 class="text-2xl font-semibold">Class Sections</h1>
+    </div>
+  </div>
+  <form
+    method="get"
+    class="mb-4 flex max-w-xl gap-2"
+    data-live-search-url="{% url 'section_search' %}"
+    data-live-search-kind="instructor-sections"
+    data-live-search-target="#section-results"
+  >
+    <input class="w-full rounded-md border border-line px-3 py-2 text-sm" name="q" value="{{ query }}" placeholder="Search subject or section">
+    <button class="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-100">Search</button>
+  </form>
+  <div class="overflow-x-auto rounded-lg border border-line bg-white shadow-sm">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-slate-100 text-muted">
+        <tr>
+          <th class="px-4 py-3">Section</th>
+          <th class="px-4 py-3">Subject</th>
+          <th class="px-4 py-3">Department</th>
+          <th class="px-4 py-3">Year</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody id="section-results" class="divide-y divide-line">
+        {% for section in sections %}
+          <tr>
+            <td class="px-4 py-3 font-medium">{{ section.section_code }}</td>
+            <td class="px-4 py-3">{{ section.subject_code }} - {{ section.subject_title }}</td>
+            <td class="px-4 py-3">{{ section.department }}</td>
+            <td class="px-4 py-3">{{ section.year_level }}</td>
+            <td class="px-4 py-3 text-right"><a class="text-accent" href="{% url 'section_detail' section.pk %}">Open</a></td>
+          </tr>
+        {% empty %}
+          <tr><td class="px-4 py-6 text-muted" colspan="5">No sections found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

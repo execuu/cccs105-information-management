@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.section_code }}{% endblock %}
+
+{% block content %}
+  <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <p class="text-sm text-muted">{{ section.subject_code }} - {{ section.subject_title }}</p>
+      <h1 class="text-3xl font-semibold">{{ section.section_code }}</h1>
+      <p class="mt-1 text-sm text-muted">Assigned to {{ section.instructor.full_name }}</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a class="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-100" href="{% url 'management_class_import_roster' section.pk %}">Import Roster</a>
+      <a class="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-100" href="{% url 'management_class_update' section.pk %}">Edit</a>
+      <a class="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-100" href="{% url 'management_class_delete' section.pk %}">Delete</a>
+    </div>
+  </div>
+
+  <section class="grid gap-4 lg:grid-cols-[2fr_1fr]">
+    <div class="rounded-lg border border-line bg-white shadow-sm">
+      <div class="border-b border-line px-4 py-3"><h2 class="font-semibold">Roster</h2></div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-100 text-muted">
+            <tr>
+              <th class="px-4 py-3">Student No.</th>
+              <th class="px-4 py-3">Name</th>
+              <th class="px-4 py-3">RFID</th>
+              <th class="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line">
+            {% for enrollment in enrollments %}
+              <tr>
+                <td class="px-4 py-3">{{ enrollment.student.student_number }}</td>
+                <td class="px-4 py-3 font-medium">{{ enrollment.student.full_name }}</td>
+                <td class="px-4 py-3">{{ enrollment.student.rfid_uid }}</td>
+                <td class="px-4 py-3 text-right"><a class="text-red-700" href="{% url 'management_enrollment_delete' enrollment.pk %}">Remove</a></td>
+              </tr>
+            {% empty %}
+              <tr><td class="px-4 py-6 text-muted" colspan="4">No students in this roster.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <aside class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <h2 class="font-semibold">Add Existing Student</h2>
+      <form method="post" class="mt-4 space-y-3">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_student">
+        {{ enrollment_form.as_p }}
+        <button class="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" type="submit">Add Student</button>
+      </form>
+    </aside>
+  </section>
+
+  <section class="mt-6 rounded-lg border border-line bg-white shadow-sm">
+    <div class="border-b border-line px-4 py-3"><h2 class="font-semibold">Sessions</h2></div>
+    <div class="divide-y divide-line">
+      {% for session in sessions %}
+        <a class="block px-4 py-3 hover:bg-slate-50" href="{% url 'management_attendance_detail' session.pk %}">
+          <span class="font-medium">{{ session.meeting_date }}</span>
+          <span class="ml-2 text-sm text-muted">{{ session.classroom.name }} {{ session.starts_at|time:"H:i" }}</span>
+        </a>
+      {% empty %}
+        <p class="px-4 py-6 text-sm text-muted">No attendance sessions yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

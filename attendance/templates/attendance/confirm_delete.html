@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Delete{% endblock %}
+
+{% block content %}
+  <section class="max-w-xl rounded-lg border border-line bg-white p-6 shadow-sm">
+    <h1 class="text-2xl font-semibold">Confirm Delete</h1>
+    <p class="mt-2 text-muted">Delete {{ object }}?</p>
+    <form method="post" class="mt-6 flex gap-2">
+      {% csrf_token %}
+      <button type="submit" class="rounded-md bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-800">Delete</button>
+      <a class="rounded-md border border-line px-4 py-2 text-sm font-semibold hover:bg-slate-100" href="{{ cancel_url }}">Cancel</a>
+    </form>
+  </section>
+{% endblock %}

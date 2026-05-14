@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <p class="text-sm text-muted">System management</p>
+      <h1 class="text-3xl font-semibold">Admin Dashboard</h1>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a class="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" href="{% url 'management_class_create' %}">New Class</a>
+      <a class="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-100" href="{% url 'management_student_create' %}">Add Student</a>
+    </div>
+  </div>
+
+  <section class="mb-6 grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Instructors</p>
+      <p class="mt-1 text-3xl font-semibold">{{ summary.instructor_count }}</p>
+    </div>
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Active classes</p>
+      <p class="mt-1 text-3xl font-semibold">{{ summary.active_class_count }}</p>
+    </div>
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Students</p>
+      <p class="mt-1 text-3xl font-semibold">{{ summary.student_count }}</p>
+    </div>
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Rooms</p>
+      <p class="mt-1 text-3xl font-semibold">{{ summary.room_count }}</p>
+    </div>
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Today</p>
+      <p class="mt-1 text-3xl font-semibold text-accent">{{ summary.today_session_count }}</p>
+    </div>
+  </section>
+
+  <section class="rounded-lg border border-line bg-white shadow-sm">
+    <div class="border-b border-line px-4 py-3">
+      <h2 class="font-semibold">Recent Attendance Sessions</h2>
+    </div>
+    <div class="divide-y divide-line">
+      {% for session in recent_sessions %}
+        <a class="block px-4 py-3 hover:bg-slate-50" href="{% url 'management_attendance_detail' session.pk %}">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p class="font-medium">{{ session.class_section }} - {{ session.meeting_date }}</p>
+              <p class="text-sm text-muted">{{ session.class_section.instructor.full_name }} - {{ session.classroom.name }} - {{ session.starts_at|time:"H:i" }}</p>
+            </div>
+            <div class="flex gap-3 text-sm">
+              <span class="text-good">P {{ session.present_count }}</span>
+              <span class="text-warn">L {{ session.late_count }}</span>
+              <span class="text-bad">A {{ session.absent_count }}</span>
+            </div>
+          </div>
+        </a>
+      {% empty %}
+        <p class="px-4 py-6 text-sm text-muted">No attendance sessions yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

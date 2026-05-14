@@ -1,0 +1,9 @@
+Django>=6.0,<6.1
+mysqlclient>=2.2
+python-dotenv>=1.0
+pyserial>=3.5
+requests>=2.31
+pytest>=9.0
+pytest-django>=4.12
+responses>=0.25
+Pillow>=12.0

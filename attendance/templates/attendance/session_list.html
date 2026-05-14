@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance Sessions{% endblock %}
+
+{% block content %}
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <p class="text-sm text-muted">Sessions by class</p>
+      <h1 class="text-3xl font-semibold">Attendance Sessions</h1>
+    </div>
+    <a class="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" href="{% url 'session_create' %}">New Session</a>
+  </div>
+
+  <section class="mb-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Accepting taps</p>
+      <p class="mt-1 text-3xl font-semibold text-good">{{ session_summary.accepting_count }}</p>
+    </div>
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Current & Upcoming</p>
+      <p class="mt-1 text-3xl font-semibold text-accent">{{ session_summary.current_upcoming_count }}</p>
+    </div>
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Recent history</p>
+      <p class="mt-1 text-3xl font-semibold">{{ session_summary.history_count }}</p>
+    </div>
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Classes</p>
+      <p class="mt-1 text-3xl font-semibold">{{ session_summary.class_count }}</p>
+    </div>
+  </section>
+
+  <div class="space-y-4">
+    {% for group in session_groups %}
+      <section class="rounded-lg border border-line bg-white shadow-sm">
+        <div class="border-b border-line px-4 py-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="text-sm text-muted">{{ group.section.subject_code }}</p>
+              <h2 class="text-lg font-semibold">{{ group.section.section_code }} - {{ group.section.subject_title }}</h2>
+            </div>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="rounded-full bg-blue-50 px-2 py-1 text-accent">{{ group.current_upcoming_sessions|length }} current/upcoming</span>
+              <span class="rounded-full bg-slate-100 px-2 py-1 text-muted">{{ group.all_sessions|length }} total</span>
+            </div>
+          </div>
+        </div>
+
+        {% if group.focus_session %}
+          <a class="block border-b border-line bg-blue-50 p-4 hover:bg-slate-100" href="{% url 'session_detail' group.focus_session.pk %}">
+            <div class="grid gap-4 lg:grid-cols-[2fr_1fr]">
+              <div>
+                <div class="flex flex-wrap items-center gap-2 text-sm">
+                  {% if group.focus_session.is_accepting_taps %}
+                    <span class="rounded-full bg-white px-2 py-1 font-semibold text-good">Accepting taps</span>
+                  {% else %}
+                    <span class="rounded-full bg-white px-2 py-1 font-semibold text-muted">{{ group.focus_session.attendance_state_label }}</span>
+                  {% endif %}
+                  <span class="text-muted">{{ group.focus_session.classroom.name }}</span>
+                </div>
+                <h3 class="mt-2 text-2xl font-semibold">{{ group.focus_session.meeting_date }}</h3>
+                <p class="mt-1 text-sm text-muted">{{ group.focus_session.starts_at|time:"H:i" }}-{{ group.focus_session.ends_at|time:"H:i" }}</p>
+              </div>
+              <div class="grid grid-cols-3 gap-3 text-center text-sm">
+                <div class="rounded-md border border-line bg-white p-3">
+                  <p class="text-xs text-muted">Present</p>
+                  <p class="mt-1 text-lg font-semibold text-good">{{ group.focus_session.present_count }}</p>
+                </div>
+                <div class="rounded-md border border-line bg-white p-3">
+                  <p class="text-xs text-muted">Late</p>
+                  <p class="mt-1 text-lg font-semibold text-warn">{{ group.focus_session.late_count }}</p>
+                </div>
+                <div class="rounded-md border border-line bg-white p-3">
+                  <p class="text-xs text-muted">Absent</p>
+                  <p class="mt-1 text-lg font-semibold text-bad">{{ group.focus_session.absent_count }}</p>
+                </div>
+              </div>
+            </div>
+          </a>
+        {% else %}
+          <div class="border-b border-line bg-slate-50 p-4">
+            <p class="font-medium">No current or upcoming sessions</p>
+            <p class="mt-1 text-sm text-muted">Recent history is shown below for quick review.</p>
+          </div>
+        {% endif %}
+
+        {% if group.secondary_sessions %}
+          <div class="border-b border-line px-4 py-3">
+            <h3 class="text-sm font-semibold">More upcoming sessions</h3>
+            <div class="mt-2 divide-y divide-line">
+              {% for session in group.secondary_sessions %}
+                <a class="grid gap-2 py-3 text-sm hover:bg-slate-50 md:grid-cols-[1fr_220px_auto]" href="{% url 'session_detail' session.pk %}">
+                  <span class="font-medium">{{ session.meeting_date }}</span>
+                  <span class="text-muted">{{ session.starts_at|time:"H:i" }}-{{ session.ends_at|time:"H:i" }} - {{ session.classroom.name }}</span>
+                  <span class="text-accent">Open</span>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {% if group.recent_sessions %}
+          <div class="px-4 py-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-sm font-semibold">Recent history</h3>
+              {% if group.hidden_recent_count %}
+                <span class="text-xs text-muted">+{{ group.hidden_recent_count }} older</span>
+              {% endif %}
+            </div>
+            <div class="mt-2 divide-y divide-line">
+              {% for session in group.recent_sessions %}
+                <a class="grid gap-2 py-3 text-sm hover:bg-slate-50 md:grid-cols-[1fr_220px_auto]" href="{% url 'session_detail' session.pk %}">
+                  <span class="font-medium">{{ session.meeting_date }}</span>
+                  <span class="text-muted">{{ session.starts_at|time:"H:i" }}-{{ session.ends_at|time:"H:i" }} - {{ session.classroom.name }}</span>
+                  <span class="text-muted">{{ session.attendance_state_label }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </section>
+    {% empty %}
+      <section class="rounded-lg border border-line bg-white p-6 text-center shadow-sm">
+        <h2 class="text-lg font-semibold">No attendance sessions yet</h2>
+        <p class="mt-1 text-sm text-muted">Create a session from one of your classes to start logging attendance.</p>
+        <a class="mx-auto mt-4 block max-w-md rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" href="{% url 'session_create' %}">New Session</a>
+      </section>
+    {% endfor %}
+  </div>
+{% endblock %}

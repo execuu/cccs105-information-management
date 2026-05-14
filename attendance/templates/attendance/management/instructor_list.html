@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Instructors{% endblock %}
+
+{% block content %}
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-2xl font-semibold">Instructors</h1>
+    <a class="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" href="{% url 'management_instructor_create' %}">New Instructor</a>
+  </div>
+  <div class="overflow-x-auto rounded-lg border border-line bg-white shadow-sm">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-slate-100 text-muted">
+        <tr>
+          <th class="px-4 py-3">Name</th>
+          <th class="px-4 py-3">Username</th>
+          <th class="px-4 py-3">Employee ID</th>
+          <th class="px-4 py-3">Department</th>
+          <th class="px-4 py-3">Contact</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-line">
+        {% for instructor in instructors %}
+          <tr>
+            <td class="px-4 py-3 font-medium">{{ instructor.full_name }}</td>
+            <td class="px-4 py-3">{{ instructor.user.username }}</td>
+            <td class="px-4 py-3">{{ instructor.employee_id }}</td>
+            <td class="px-4 py-3">{{ instructor.department }}</td>
+            <td class="px-4 py-3">{{ instructor.contact_number|default:"-" }}</td>
+            <td class="px-4 py-3 text-right">
+              <a class="text-accent" href="{% url 'management_instructor_update' instructor.pk %}">Edit</a>
+              <a class="ml-2 text-red-700" href="{% url 'management_instructor_delete' instructor.pk %}">Delete</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td class="px-4 py-6 text-muted" colspan="6">No instructors yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

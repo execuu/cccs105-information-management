@@ -1,0 +1,19 @@
+{
+  "name": "infomanage",
+  "version": "1.0.0",
+  "description": "Django and Tailwind CSS classroom attendance logging system.",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./static/src/input.css -o ./static/css/app.css --minify",
+    "watch:css": "tailwindcss -i ./static/src/input.css -o ./static/css/app.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.4",
+    "playwright": "^1.59.1",
+    "tailwindcss": "^4.2.4"
+  }
+}

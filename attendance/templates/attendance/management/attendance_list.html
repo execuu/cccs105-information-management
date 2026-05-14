@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance Monitoring{% endblock %}
+
+{% block content %}
+  <div class="mb-4">
+    <p class="text-sm text-muted">Read-only attendance monitoring</p>
+    <h1 class="text-2xl font-semibold">Attendance Sessions</h1>
+  </div>
+  <div class="overflow-x-auto rounded-lg border border-line bg-white shadow-sm">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-slate-100 text-muted">
+        <tr>
+          <th class="px-4 py-3">Class</th>
+          <th class="px-4 py-3">Instructor</th>
+          <th class="px-4 py-3">Room</th>
+          <th class="px-4 py-3">Date</th>
+          <th class="px-4 py-3">Present</th>
+          <th class="px-4 py-3">Late</th>
+          <th class="px-4 py-3">Absent</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-line">
+        {% for session in sessions %}
+          <tr>
+            <td class="px-4 py-3 font-medium">{{ session.class_section }}</td>
+            <td class="px-4 py-3">{{ session.class_section.instructor.full_name }}</td>
+            <td class="px-4 py-3">{{ session.classroom.name }}</td>
+            <td class="px-4 py-3">{{ session.meeting_date }}</td>
+            <td class="px-4 py-3 text-good">{{ session.present_count }}</td>
+            <td class="px-4 py-3 text-warn">{{ session.late_count }}</td>
+            <td class="px-4 py-3 text-bad">{{ session.absent_count }}</td>
+            <td class="px-4 py-3 text-right"><a class="text-accent" href="{% url 'management_attendance_detail' session.pk %}">Open</a></td>
+          </tr>
+        {% empty %}
+          <tr><td class="px-4 py-6 text-muted" colspan="8">No attendance sessions yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

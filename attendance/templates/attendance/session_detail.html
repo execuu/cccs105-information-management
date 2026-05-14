@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ session }}{% endblock %}
+
+{% block content %}
+  <div data-live-attendance-url="{% url 'session_live_data' session.pk %}">
+  <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <p class="text-sm text-muted">{{ session.classroom.name }} - {{ session.meeting_date }}</p>
+      <h1 class="text-3xl font-semibold">{{ session.class_section }}</h1>
+      <div class="mt-2 flex flex-wrap items-center gap-2 text-sm">
+        <span class="rounded-md border border-line bg-white px-2 py-1 font-medium" data-live-attendance-state>{{ attendance_state }}</span>
+        <span class="text-muted">{{ session.starts_at }} to {{ session.ends_at }}</span>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      {% if can_open_attendance %}
+        <form method="post" action="{% url 'session_open_attendance' session.pk %}">
+          {% csrf_token %}
+          <button class="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700" type="submit">Open Attendance</button>
+        </form>
+      {% endif %}
+      {% if can_close_attendance %}
+        <form method="post" action="{% url 'session_close_attendance' session.pk %}">
+          {% csrf_token %}
+          <button class="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-100" type="submit">Close Attendance</button>
+        </form>
+      {% endif %}
+      <a class="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-100" href="{% url 'session_export' session.pk %}">Export CSV</a>
+      <a class="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold hover:bg-slate-100" href="{% url 'session_update' session.pk %}">Edit</a>
+    </div>
+  </div>
+
+  <section class="mb-5 grid gap-3 md:grid-cols-3">
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Present</p>
+      <p class="mt-1 text-3xl font-semibold text-good" data-live-count="present">{{ present_count }}</p>
+    </div>
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Late</p>
+      <p class="mt-1 text-3xl font-semibold text-warn" data-live-count="late">{{ late_count }}</p>
+    </div>
+    <div class="rounded-lg border border-line bg-white p-4 shadow-sm">
+      <p class="text-sm text-muted">Absent</p>
+      <p class="mt-1 text-3xl font-semibold text-bad" data-live-count="absent">{{ absent_count }}</p>
+    </div>
+  </section>
+
+  <section class="grid gap-4 lg:grid-cols-[2fr_1fr]">
+    <div class="overflow-x-auto rounded-lg border border-line bg-white shadow-sm">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-slate-100 text-muted">
+          <tr>
+            <th class="px-4 py-3">Student</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">Tap Time</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line" data-live-records>
+          {% for record in records %}
+            <tr>
+              <td class="px-4 py-3">{{ record.student.student_number }} - {{ record.student.full_name }}</td>
+              <td class="px-4 py-3">{{ record.status }}</td>
+              <td class="px-4 py-3">{{ record.tapped_at|default:"-" }}</td>
+            </tr>
+          {% empty %}
+            <tr><td class="px-4 py-6 text-muted" colspan="3">No attendance records yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <aside class="rounded-lg border border-line bg-white shadow-sm">
+      <div class="border-b border-line px-4 py-3"><h2 class="font-semibold">Scan Audit</h2></div>
+      <div class="divide-y divide-line" data-live-scans>
+        {% for scan in scans %}
+          <div class="px-4 py-3 text-sm">
+            <div class="flex justify-between gap-2">
+              <span class="font-medium">{{ scan.uid }}</span>
+              <span>{{ scan.result }}</span>
+            </div>
+            <p class="mt-1 text-muted">{{ scan.student.full_name|default:scan.reason }}</p>
+          </div>
+        {% empty %}
+          <p class="px-4 py-6 text-sm text-muted">No scans for this session.</p>
+        {% endfor %}
+      </div>
+    </aside>
+  </section>
+  </div>
+{% endblock %}
