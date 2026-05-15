@@ -5,12 +5,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}RFID Attendance{% endblock %}</title>
+    <link rel="icon" href="{% static 'img/ccs-logo.png' %}">
     <link rel="stylesheet" href="{% static 'css/app.css' %}">
   </head>
-  <body class="min-h-screen bg-slate-50 text-ink">
-    <header class="border-b border-line bg-white">
+  <body class="{% block body_class %}min-h-screen bg-slate-50 text-ink{% endblock %}">
+    <header class="{% block header_class %}border-b border-line bg-white{% endblock %}">
       <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <a href="{% url 'dashboard' %}" class="text-lg font-semibold tracking-normal">RFID Attendance</a>
+        <a href="{% url 'dashboard' %}" class="nav-brand" aria-label="RFID Attendance dashboard">
+          <span class="nav-brand-mark" aria-hidden="true">
+            <img src="{% static 'img/ccs-logo.png' %}" alt="">
+          </span>
+          <span class="nav-brand-copy">
+            <span>RFID Attendance</span>
+            <small>College of Computer Studies</small>
+          </span>
+        </a>
         {% if user.is_authenticated %}
           <nav class="flex flex-wrap items-center gap-2 text-sm">
             {% if user.is_staff %}
@@ -33,7 +42,7 @@
         {% endif %}
       </div>
     </header>
-    <main class="mx-auto max-w-7xl px-4 py-6">
+    <main class="{% block main_class %}mx-auto max-w-7xl px-4 py-6{% endblock %}">
       {% if messages %}
         <div class="mb-4 space-y-2">
           {% for message in messages %}

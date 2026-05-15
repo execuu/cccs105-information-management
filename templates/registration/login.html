@@ -1,25 +1,44 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Sign In{% endblock %}
+{% block body_class %}min-h-screen bg-slate-50 text-ink{% endblock %}
+{% block main_class %}login-shell{% endblock %}
 
 {% block content %}
-  <section class="mx-auto max-w-md rounded-lg border border-line bg-white p-6 shadow-sm">
-    <h1 class="text-2xl font-semibold">Sign In</h1>
-    <p class="mt-1 text-sm text-muted">Use your admin or instructor account.</p>
-    <form method="post" class="mt-6 space-y-4">
-      {% csrf_token %}
-      {% if form.non_field_errors %}
-        <div class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{{ form.non_field_errors }}</div>
-      {% endif %}
-      <div>
-        <label class="text-sm font-medium" for="{{ form.username.id_for_label }}">Username</label>
-        {{ form.username }}
+  <section class="login-screen">
+    <div class="login-hero" aria-label="Camarines Sur Polytechnic Colleges College of Computer Studies campus">
+      <img src="{% static 'img/ccs-cover.jpg' %}" alt="">
+      <div class="login-hero-content">
+        <div class="login-hero-label">CSPC College of Computer Studies</div>
+        <h1>RFID Classroom Attendance</h1>
+        <p>Secure sign-in for live session monitoring, student rosters, and attendance records.</p>
       </div>
-      <div>
-        <label class="text-sm font-medium" for="{{ form.password.id_for_label }}">Password</label>
-        {{ form.password }}
-      </div>
-      <button type="submit" class="w-full rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Login</button>
-    </form>
+    </div>
+
+    <div class="login-form-panel">
+      <section class="login-card" aria-labelledby="login-heading">
+        <img class="login-card-logo" src="{% static 'img/ccs-logo.png' %}" alt="College of Computer Studies logo">
+        <p class="login-kicker">Camarines Sur Polytechnic Colleges</p>
+        <h2 id="login-heading">Welcome back</h2>
+        <p class="login-copy">Use your admin or instructor account to continue.</p>
+
+        <form method="post" class="login-form">
+          {% csrf_token %}
+          {% if form.non_field_errors %}
+            <div class="login-error">{{ form.non_field_errors }}</div>
+          {% endif %}
+          <div class="login-field">
+            <label for="{{ form.username.id_for_label }}">Username</label>
+            {{ form.username }}
+          </div>
+          <div class="login-field">
+            <label for="{{ form.password.id_for_label }}">Password</label>
+            {{ form.password }}
+          </div>
+          <button type="submit" class="login-submit">Login</button>
+        </form>
+      </section>
+    </div>
   </section>
 {% endblock %}
